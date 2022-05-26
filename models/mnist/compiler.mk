@@ -4,6 +4,7 @@ MODEL ?= mnist
 MODELINPUT ?= "data_0",float,[1,1,28,28]
 BUNDLE ?= bin
 MEMOPT ?= false
+MO436-features ?= true
 
 all: clean build
 
@@ -18,7 +19,8 @@ ${BUNDLE}/$(MODEL).o : $(MODEL).onnx
 		-dump-graph-DAG-before-compile=$(MODEL)-before.dot \
 		-dump-graph-DAG=$(MODEL)-after.dot \
 		-reuse-activation-memory-allocations=$(MEMOPT) \
-        -backend=CPU \
+		-backend=CPU \
+		-MO436Features=$(MO436-features) \
 		-dump-ir > $(MODEL).lir
 
 clean:

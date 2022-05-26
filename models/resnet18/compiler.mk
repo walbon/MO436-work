@@ -5,6 +5,7 @@ MODELINPUT ?= "data",float,[1,3,224,224]
 BAPI ?= static
 BUNDLE ?= bin
 MEMOPT ?= false
+MO436Features ?= true
 
 all: clean build
 
@@ -20,6 +21,8 @@ ${BUNDLE}/$(MODEL).o : $(MODEL).onnx
 		-dump-graph-DAG-before-compile=$(MODEL)-before.dot \
 		-dump-graph-DAG=$(MODEL)-after.dot \
 		-backend=CPU \
+		--MO436Features=$(MO436Features) \
+		-verbose \
 		-reuse-activation-memory-allocations=$(MEMOPT) \
 		-dump-ir > $(MODEL).lir
 
