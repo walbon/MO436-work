@@ -25,6 +25,11 @@
 
 #include "lenet.h"
 
+#include <chrono>
+#include <iostream>
+#include <thread>
+using namespace std::chrono;
+using namespace std;
 /// This is an example demonstrating how to use auto-generated bundles and
 /// create standalone executables that can perform neural network computations.
 /// This example loads and runs the compiled lenet network model.
@@ -233,6 +238,9 @@ int main(int argc, char **argv) {
     inputDims[2] = DEFAULT_HEIGHT;
     inputDims[3] = DEFAULT_WIDTH;
     size_t inputSizeInBytes = DEFAULT_HEIGHT * DEFAULT_WIDTH * sizeof(float);
+
+    unsigned long total_time = 0ul;
+
     for (unsigned n = 0; n < numImages; n++) {
         float *inputT{nullptr};
         inputT = static_cast<float *>(malloc(inputSizeInBytes));
@@ -251,12 +259,17 @@ int main(int argc, char **argv) {
         }
         // Copy image data into the data input variable in the mutableWeightVars area.
         memcpy(inputAddr, inputT, inputSizeInBytes);
+	auto start = high_resolution_clock::now();
         // Perform the computation.
         int errCode = lenet(constantWeight, mutableWeight, activations);
         if (errCode != GLOW_SUCCESS) {
             printf("Error running bundle: error code %d\n", errCode);
         }
+	auto stop = high_resolution_clock::now();
+	total_time += duration_cast<microseconds>(stop - start).count();
         // Print results.
         ShowTops(inputImageFilenames[n].c_str());
     }
+    unsigned long avg_time = (unsigned long)(total_time/numImages);
+    cout << "AVG time: " << avg_time << " microsencods\n";
 }
